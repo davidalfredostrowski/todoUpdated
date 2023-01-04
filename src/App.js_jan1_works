@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import Web3 from 'web3'
 import './App.css'
+//import { TODO_LIST_ABI, TODO_LIST_ADDRESS } from './config'
+
 import TodoList from './TodoList'
 
 class App extends Component {
@@ -20,12 +22,20 @@ class App extends Component {
 	console.log("account", accounts[0])
 	this.setState({ account: accounts[0] })	
 	var config  = require('./TodoList.json');   // put a copy in /src directory.....
+	// then reference as ....    -> config.abi 
+//todoList.options.address = "0xD8D3fBD73119e587a47E0eca166033fbF1Da7644";
         let jsonData = require('./TodoList.json');
         var networkKey =  Object.keys(jsonData['networks'])[Object.keys(jsonData.networks).length-1] 
+        // error ? copy over the updated Voting.json from bulid/contract
+        console.log("contract address: ", jsonData['networks'][networkId]["address"] )
         const contract = new web3.eth.Contract(jsonData.abi);
 
         contract.options.address = jsonData['networks'][networkId]["address"]
-	//let ans = await contract.methods.createTask("junk").send({ from: accounts[0] })i.once('receipt', (receipt) => { this.setState({ loading: false })})
+		//const contract = new web3.eth.Contract(VOTING_ABI);
+	let ans = await contract.methods.createTask("junk").send({ from: accounts[0] })
+    .once('receipt', (receipt) => {
+      this.setState({ loading: false })
+    })
 
 	this.setState({ contract }) 
 
@@ -37,14 +47,17 @@ class App extends Component {
 			tasks: [...this.state.tasks,task]
 		})
 	}
+	console.log("tasks", this.state.tasks)
 	}
-        constructor(props){
+  constructor(props){
 	  	super(props)
 	  	this.state = {account: '',
 		taskCount: 0,
 		tasks: []
-	}
+		}
  
+
+
     this.createTask = this.createTask.bind(this)
     this.toggleCompleted = this.toggleCompleted.bind(this)
 
@@ -77,6 +90,13 @@ state = { visible: true
       <div>
        My todo list
 
+			<nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+          <ul className="navbar-nav px-3">
+            <li className="nav-item text-nowrap d-none d-sm-none d-sm-block">
+              <small><a className="nav-link" href="#"><span id="account"></span></a></small>
+            </li>
+          </ul>
+        </nav>
         <div className="container-fluid">
           <div className="row">
             <main role="main" className="col-lg-12 d-flex justify-content-center">
